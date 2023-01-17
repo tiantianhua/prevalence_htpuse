@@ -1,0 +1,434 @@
+---
+title: "Meta-Regression"
+author: "Tianze Sun"
+date: '2022-03-29'
+output: html_document
+---
+
+##Setting Up R and Importing Datasets
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#open libarays
+library(here)
+library(metafor)
+library(meta)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(wesanderson)
+library(LaCroixColoR)
+library(dplyr)
+library(readxl)
+
+# all surveys combined
+all <- read_excel("Updated Datasets/030522_dataset_greylit.xlsx")
+alldaily <- read_excel("Updated Datasets/030522_dataset_greylit_dailyplot.xlsx")
+uniquesample <- read_excel("unique samples/unique samples greylit.xlsx") 
+```
+
+## Descriptive Statistics
+``` {r tables, echo=FALSE, warning=FALSE}
+table(all_LT$year)
+class(all_LT$year)
+```
+
+##Filtering Variables: by REGION and LIFETIME use among all genders for adolescents and adults
+```{r filter variables,echo = FALSE, warning = FALSE }
+## all lifetime Region of the Americas
+all_LT_RA<- fixed_data %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  filter(fixed != "1") %>%
+  filter(region == "Region of the Americas") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+## all lifetime European Region
+all_LT_ER<- fixed_data %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  filter(region == "European Region") %>%
+  filter(fixed != "1") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+  
+## all lifetime Western Pacific Region
+all_LT_WPR<- fixed_data %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  filter(fixed != "1") %>%
+  filter(region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+```
+
+##Meta-Regression (year): by Region of the Americas and LIFETIME use among all genders and all age groups
+```{r meta-analysis_LT: all (Region of the Americas),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#region of the americas LT
+ies.dat.all.LT.RA <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_LT_RA, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.LT.RA)
+summary(res)
+```
+
+##Meta-Regression (year): by European Region and LIFETIME use among all genders and all age groups
+```{r meta-analysis_LT: all (European Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#European Region LT
+ies.dat.all.LT.ER <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_LT_ER, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.LT.ER)
+res
+```
+
+##Meta-Regression (year): by Western Pacific Region and LIFETIME use among all genders and all age groups
+```{r meta-analysis_LT: all (Western Pacfic),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#Western Pacific Region LT
+ies.dat.all.LT.WPR <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_LT_WPR, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.LT.WPR)
+res
+```
+
+##Filtering Variables: by REGION and current among all genders for all age groups
+```{r filter variables current,echo = FALSE, warning = FALSE }
+## all current Region of the Americas
+all_current_RA<- fixed_data %>% 
+  filter(timing == "current") %>%
+  filter(gender == "all") %>%
+  filter(fixed != "1") %>%
+  filter(region == "Region of the Americas") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+## all lifetime European Region
+all_current_ER<- fixed_data %>% 
+  filter(timing == "current") %>%
+  filter(gender == "all") %>%
+  filter(fixed != "1") %>%
+  filter(region == "European Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+  
+## all lifetime Western Pacific Region
+all_current_WPR<- fixed_data %>% 
+  filter(timing == "current") %>%
+  filter(gender == "all") %>%
+  filter(fixed != "1") %>%
+  filter(region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+```
+
+##Meta-Regression (year): by Region of the Americas and current use among all genders and all age groups
+```{r meta-regression_current: all (Region of the Americas),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#region of the americas LT
+ies.dat.all.current.RA <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_current_RA, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.current.RA)
+res
+```
+
+##Meta-Regression (year): by European Region and current use among all genders and all age groups
+```{r meta-regression_current: all (European Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#European Region LT
+ies.dat.all.current.ER <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_current_ER, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.current.ER)
+res
+```
+
+##Meta-Regression (year): by Western Pacific Region and current use among all genders and all age groups
+```{r meta-regression_current: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#Western Pacific Region LT
+ies.dat.all.current.WPR <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_current_WPR, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.current.WPR)
+res
+```
+
+##Filtering Variables: by REGION and DAILY use among all genders for all age groups
+```{r filter variables daily,echo = FALSE, warning = FALSE }
+## all lifetime European Region
+all_daily_ER<- all %>% 
+  filter(timing == "daily") %>%
+  filter(gender == "all") %>%
+  filter(region == "European Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+  
+## all lifetime Western Pacific Region
+all_daily_WPR<- all %>% 
+  filter(timing == "daily") %>%
+  filter(gender == "all") %>%
+  filter(region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+```
+
+##Meta-Regression (year): by European Region and DAILY use among all genders and all age groups
+```{r meta-regression_daily: all (European Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#European Region LT
+ies.dat.all.daily.ER <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_daily_ER, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.daily.ER)
+res
+```
+
+##Meta-Regression (year): by Western Pacific Region and DAILY use among all genders and all age groups
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#Western Pacific Region LT
+ies.dat.all.daily.WPR <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_daily_WPR, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.daily.WPR)
+res
+```
+
+
+```{r plot by region over year for lifetime,echo = FALSE, warning = FALSE,fig.width = 12, fig.height=4 }
+group_all_LT<- alldaily %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  filter(region == "European Region" | region == "Region of the Americas" | region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+p<- ggplot(group_all_LT, aes(x = factor(year), y = prop)) +
+  geom_point(aes(color = region, shape = region, alpha=0.5), size = 3) +
+  scale_colour_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  xlab("Survey Year") +
+  ylab("Weighted Lifetime %") +
+  scale_y_continuous(limits = c(0, 15)) + 
+  theme(axis.text.x = element_text(angle = 22)) +
+  theme(legend.title = element_blank()) +
+  theme(axis.text=element_text(size=10),text = element_text(size=12))+
+  theme(legend.position = "none") +
+  facet_wrap(~ region)
+ggplotly(p)
+```
+
+```{r plot by region over year for current,echo = FALSE, warning = FALSE,fig.width = 12, fig.height=4 }
+group_all_current<- alldaily %>% 
+  filter(timing == "current") %>%
+  filter(gender == "all") %>%
+  filter(region == "European Region" | region == "Region of the Americas" | region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+o<- ggplot(group_all_current, aes(x = factor(year), y = prop)) +
+  geom_point(aes(color = region, shape = region, alpha=0.5), size = 3) +
+  scale_colour_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  xlab("Survey Year") +
+  ylab("Weighted Current Use %") +
+  scale_y_continuous(limits = c(0, 15)) + 
+  theme(axis.text.x = element_text(angle = 20)) +
+  theme(legend.title = element_blank()) +
+  theme(axis.text=element_text(size=10),text = element_text(size=12))+
+  theme(legend.position = "none") +
+  facet_wrap(~ region)
+
+ggplotly(o)
+```
+
+```{r plot by region over year for DAILY,echo = FALSE, warning = FALSE,fig.width = 12, fig.height=4 }
+group_all_daily<- alldaily %>% 
+  filter(timing == "daily") %>%
+  filter(gender == "all") %>%
+  filter(region == "European Region" | region == "Region of the Americas" | region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+p<- ggplot(group_all_daily, aes(x = factor(year), y = prop)) +
+  geom_point(aes(color = region, shape = region, alpha=0.5), size = 3) +
+  scale_colour_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  xlab("Survey Year") +
+  ylab("Weighted Daily %") +
+  scale_y_continuous(limits = c(0, 15)) + 
+  theme(axis.text.x = element_text(angle = 20)) +
+  theme(legend.title = element_blank()) +
+  theme(axis.text=element_text(size=10),text = element_text(size=12))+
+  theme(legend.position = "none") +
+  facet_wrap(~ region)
+ggplotly(p)
+```
+
+##Filtering Variables: by timing among all genders for adolescents and adults
+```{r filter variables,echo = FALSE, warning = FALSE }
+## all lifetime age_group
+allbyage_LT <- fixed_data %>%
+  filter(timing == "lifetime") %>%
+  filter(age_group != "mixed") %>%
+  filter(fixed != "1") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all current age_group
+allbyage_current <- fixed_data %>%
+  filter(timing == "current") %>%
+  filter(age_group != "mixed") %>%
+  filter(fixed != "1") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all daily age_group
+allbyage_daily <- all %>%
+  filter(timing == "daily") %>%
+  filter(age_group != "mixed") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+```
+
+##Meta-Regression (age_group): by all regions and LIFETIME use among all genders and ADOLESCENTS VS ADULTS
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_LT, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ age_group, data=ies.dat.all.LT)
+res
+```
+##Meta-Regression (age_group): by all regions and CURRENT use among all genders and ADOLESCENTS VS ADULTS
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.current <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_current, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ age_group, data=ies.dat.all.current)
+res
+```
+
+##Filtering Variables: by timing among MALES vs FEMALES for all age groups
+```{r filter variables,echo = FALSE, warning = FALSE }
+## all lifetime gender
+allbygender_LT <- fixed_data %>%
+  filter(timing == "lifetime") %>%
+  filter(gender != "all") %>%
+  filter(fixed != "1") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all current gender
+allbygender_current <- all %>%
+  filter(timing == "current") %>%
+  filter(gender != "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all daily gender
+allbygender_daily <- all %>%
+  filter(timing == "daily") %>%
+  filter(gender != "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+```
+
+##Meta-Regression (age_group): by all regions and LIFETIME use among all genders and ADOLESCENTS VS ADULTS
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_LT, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ gender, data=ies.dat.all.LT)
+res
+```
+
+##Filtering Variables: by timing among all genders
+```{r filter variables,echo = FALSE, warning = FALSE }
+## all lifetime
+all_LT<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+## all current
+all_current<- all %>% 
+  filter(timing == "current") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all daily
+all_daily<- all %>% 
+  filter(timing == "daily") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+```
+
+##Meta-Regression: by all regions and CURRENT use among all genders and all age groups
+```{r meta-regression_current: all,echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.current <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_current, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.current)
+res
+```
+
+##Meta-Regression: by all regions and LIFETIME use among all genders and all age groups
+```{r meta-regression_lifetime: all,echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_LT, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.LT)
+res
+```
+
+##Meta-Regression: by all regions and DAILY use among all genders and all age groups
+```{r meta-regression_daily: all,echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.daily <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_daily, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.daily)
+res
+```
