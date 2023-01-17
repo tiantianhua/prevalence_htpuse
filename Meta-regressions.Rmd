@@ -1,0 +1,38 @@
+---
+title: "Meta-regressions"
+output: html_notebook
+---
+
+```{r region lifetime, echo = FALSE, warning = FALSE}
+
+allbyregion_LT_AMR<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  filter(region == "Region of the Americas") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+allbyregion_LT_EUR<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  filter(region == "European Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+allbyregion_LT_WPR<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  filter(region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+```
+
+##Meta-Regression: LIFETIME use ALL
+```{r meta-regression_lifetime: all,echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyregion_LT_WPR, 
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ year, data=ies.dat.all.LT)
+res
+```
