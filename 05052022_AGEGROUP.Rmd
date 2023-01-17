@@ -1,0 +1,183 @@
+---
+title: "05052022 AGE"
+author: "Tianze Sun"
+date: '2022-05-05'
+output: html_document
+---
+
+##Filtering Variables: by timing among AGE GROUP
+```{r age group, echo = FALSE, warning = FALSE,fig.width = 12, fig.height=4 }
+## all lifetime age_group
+allbyage_LT <- all %>%
+  filter(timing == "lifetime") %>%
+  filter(age_group != "mixed") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all current age_group
+allbyage_current <- all %>%
+  filter(timing == "current") %>%
+  filter(age_group != "mixed") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all daily age_group
+allbyage_daily <- all %>%
+  filter(timing == "daily") %>%
+  filter(age_group != "mixed") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+```
+
+##Meta analysis: LIFETIME use forest plot AGE GROUP
+```{r meta-analysis_LT: all (age_group),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.age <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_LT, 
+                  measure = "PFT")
+
+b.all.age.LT <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.age, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = age_group,
+            subgroup.name = "Age Group")
+
+b.all.age.LT
+
+forest(b.all.age.LT,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Lifetime use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of HTP Lifetime Use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 3,
+       transf= transf.ipft.hm)
+```
+
+##Meta analysis: CURRENT use forest plot AGE GROUP
+```{r meta-analysis_current: all (age_group),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.age <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_current, 
+                  measure = "PFT")
+
+b.all.age.current <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.age, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = age_group,
+            subgroup.name = "Age Group")
+
+b.all.age.current
+
+forest(b.all.age.current,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Current Use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of Current HTP use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 3,
+       transf= transf.ipft.hm)
+```
+
+##Meta analysis: DAILY use forest plot AGE GROUP
+```{r meta-analysis_daily: all (age_group),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.age <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_daily, 
+                  measure = "PFT")
+
+b.all.age.daily <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.age, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = age_group,
+            subgroup.name = "Age Group")
+
+b.all.age.daily
+
+forest(b.all.age.daily,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Daily Use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of daily HTP use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 3,
+       transf= transf.ipft.hm)
+```
+
+##Meta-Regression (age_group): LIFETIME use by AGE GROUP
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_LT, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ age_group, data=ies.dat.all.LT)
+res
+```
+
+##Meta-Regression (age_group): CURRENT use by AGE GROUP
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.current <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_current, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ age_group, data=ies.dat.all.current)
+res
+```
+
+##Meta-Regression (age_group): DAILY use by AGE GROUP
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.daily <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbyage_daily, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ age_group, data=ies.dat.all.daily)
+res
+```
