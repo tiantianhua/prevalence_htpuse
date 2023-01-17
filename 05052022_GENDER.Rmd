@@ -1,0 +1,388 @@
+---
+title: "05052022 forest plots GENDER"
+author: "Tianze Sun"
+date: '2022-05-05'
+output: html_document
+---
+
+##Filtering Variables: by timing GENDER
+``` {r gender as moderator, echo = FALSE, warning = FALSE}
+## all lifetime gender
+allbygender_LT<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender != "all") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+## all current gender
+allbygender_current<- all %>% 
+  filter(timing == "current") %>%
+  filter(gender != "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all daily gender
+allbygender_daily<- all %>% 
+  filter(timing == "daily") %>%
+  filter(gender != "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+```
+
+##Meta analysis: LIFETIME use forest plot GENDER
+```{r meta-analysis_LT: all (gender),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.gender <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_LT, 
+                  measure = "PFT")
+
+b.all.gender <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country,
+            sm = "PFT", 
+            data = ies.dat.all.gender, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = gender,
+            subgroup.name = "Gender")
+
+b.all.gender
+
+forest(b.all.gender,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Lifetime use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of Lifetime HTP Use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 2,
+       transf= transf.ipft.hm)
+```
+
+##Meta analysis: CURRENT use forest plot GENDER
+```{r meta-analysis_current: all (gender),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.gender <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_current, 
+                  measure = "PFT")
+
+b.all.gender <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.gender, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = gender,
+            subgroup.name = "Gender")
+
+b.all.gender
+
+forest(b.all.gender,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Current Use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of Current HTP Use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 2,
+       transf= transf.ipft.hm)
+```
+
+##Meta analysis: DAILY use forest plot GENDER
+```{r meta-analysis_daily: all (gender),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.gender <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_daily, 
+                  measure = "PFT")
+
+b.all.gender <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.gender, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = gender,
+            subgroup.name = "Gender")
+
+b.all.gender
+
+forest(b.all.gender,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Daily (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of HTP Daily Use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 2,
+       transf= transf.ipft.hm)
+```
+
+##Meta-Regression (age_group): LIFETIME use GENDER
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_LT, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ gender, data=ies.dat.all.LT)
+res
+```
+
+##Meta-Regression (age_group): CURRENT use GENDER
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.current <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_current, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ gender, data=ies.dat.all.current)
+res
+```
+
+##Meta-Regression (age_group): DAILY use GENDER
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all daily age_group
+ies.dat.all.daily <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_daily, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ gender, data=ies.dat.all.daily)
+res
+```
+
+```{r gender region lifetime, echo = FALSE, warning = FALSE}
+
+allbygender_LT_RA<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender != "all") %>%
+  filter(region == "Region of the Americas") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+allbygender_LT_ER<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender != "all") %>%
+  filter(region == "European Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+allbygender_LT_WPR<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender != "all") %>%
+  filter(region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+```
+
+##Meta analysis: LIFETIME use forest plot GENDER WPR
+```{r meta-analysis_LT: all (gender),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.gender <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_LT_ER, 
+                  measure = "PFT")
+
+b.all.gender <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.gender, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = gender,
+            subgroup.name = "Gender")
+
+b.all.gender
+
+forest(b.all.gender,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Lifetime use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of Lifetime HTP Use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 2,
+       transf= transf.ipft.hm)
+```
+##Meta-Regression (age_group): LIFETIME use GENDER WPR
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_LT_WPR, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ gender, data=ies.dat.all.LT)
+res
+```
+
+```{r gender region current, echo = FALSE, warning = FALSE}
+
+allbygender_current_RA<- all %>% 
+  filter(timing == "current") %>%
+  filter(gender != "all") %>%
+  filter(region == "Region of the Americas") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+allbygender_current_ER<- all %>% 
+  filter(timing == "current") %>%
+  filter(gender != "all") %>%
+  filter(region == "European Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+allbygender_current_WPR<- all %>% 
+  filter(timing == "current") %>%
+  filter(gender != "all") %>%
+  filter(region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+```
+
+##Meta analysis: CURRENT use forest plot GENDER WPR
+```{r meta-analysis_current: all (gender),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.gender <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_current_RA, 
+                  measure = "PFT")
+
+b.all.gender <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.gender, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = gender,
+            subgroup.name = "Gender")
+
+b.all.gender
+
+forest(b.all.gender,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Current use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of Current HTP Use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 2,
+       transf= transf.ipft.hm)
+```
+```{r gender region daily, echo = FALSE, warning = FALSE}
+
+allbygender_daily_ER<- all %>% 
+  filter(timing == "daily") %>%
+  filter(gender != "all") %>%
+  filter(region == "European Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+allbygender_daily_WPR<- all %>% 
+  filter(timing == "daily") %>%
+  filter(gender != "all") %>%
+  filter(region == "Western Pacific Region") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+```
+
+##Meta analysis: DAILY use forest plot GENDER WPR
+```{r meta-analysis_current: all (gender),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+# double arcsine transformation
+ies.dat.all.gender <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_daily_WPR, 
+                  measure = "PFT")
+
+b.all.gender <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            keepdata = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.gender, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3,
+            subgroup = gender,
+            subgroup.name = "Gender")
+
+b.all.gender
+
+forest(b.all.gender,
+       col.by = "black",
+       leftcols = c("studlab","event","n", "year"),
+       leftlabs = c("Country", "Daily use (n)", "Total participants (n)", "Data collection (year)"),
+       rightcols = c("effect", "ci", "age_range"),
+       rightlabs = c("Prevalence", "95% C.I.", "Age, years (range)"),
+       xlab = "Prevalence of Daily HTP Use", smlab = "", 
+       xlim = c(0,20),
+       pscale = 100,
+       weight.study = "random", squaresize = 0.5, 
+       fixed = FALSE,
+       digits = 2,
+       transf= transf.ipft.hm)
+```
+
+
+##Meta-Regression (age_group): DAILY use GENDER WPR
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data =allbygender_daily_ER, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ gender, data=ies.dat.all.LT)
+res
+```
+
+##Meta-Regression (age_group): LIFETIME use GENDER WPR
+```{r meta-regression_daily: all (Western Pacific Region),echo = FALSE, warning = FALSE, fig.width = 10, fig.height=14}
+#all lifetime age_group
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = allbygender_LT_WPR, 
+                  keepdata = TRUE,
+                  measure = "PFT")
+
+## random-effects model
+res <- rma(yi, vi, mods = ~ gender, data=ies.dat.all.LT)
+res
+```
