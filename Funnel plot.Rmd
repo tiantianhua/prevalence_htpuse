@@ -1,0 +1,110 @@
+---
+title: "Funnel plots"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+
+```{r filter variables,echo = FALSE, warning = FALSE }
+## all lifetime
+all_LT<- all %>% 
+  filter(timing == "lifetime") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100)
+
+## all current
+all_current<- all %>% 
+  filter(timing == "current") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+
+## all daily
+all_daily<- all %>% 
+  filter(timing == "daily") %>%
+  filter(gender == "all") %>%
+  mutate(prop = round(w.cases/total,3)*100) 
+```
+
+
+```{r, funnel plots, lifetime}
+# double arcsine transformation
+ies.dat.all.LT <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_LT, 
+                  measure = "PFT")
+
+b.all.LT <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            random = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.LT, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3)
+
+library(metafor)
+
+funnel(b.all.LT, yaxis='size', 
+       xlab = 'Log Odds (lifetime)', ylab = 'Sample Size')
+
+funnel(b.all.LT, yaxis='se', 
+       xlab = 'Log Odds (lifetime)', ylab = 'Standard Error')
+
+metabias(b.all.LT, method.bias = 'Egger')
+```
+
+```{r, funnel plots, current use}
+# double arcsine transformation
+ies.dat.all.current <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_current, 
+                  measure = "PFT")
+
+b.all.current <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            random = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.current, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3)
+
+funnel(b.all.current, yaxis='size', 
+       xlab = 'Log Odds (current)', ylab = 'Sample Size')
+
+funnel(b.all.current, yaxis='se', 
+       xlab = 'Log Odds (current)', ylab = 'Standard Error')
+
+metabias(b.all.current, method.bias = 'Egger')
+```
+```{r, funnel plots, daily use}
+# double arcsine transformation
+ies.dat.all.daily <- escalc(xi = w.cases,
+                  ni = total, 
+                  data = all_daily,
+                  measure = "PFT")
+
+b.all.daily <- metaprop(event = w.cases, 
+            n = total, 
+            studlab = country, 
+            random = TRUE,
+            sm = "PFT", 
+            data = ies.dat.all.daily, 
+            method = "Inverse", 
+            method.tau = "DL", 
+            digits = 3)
+
+funnel(b.all.daily, yaxis='size', 
+       xlab = 'Log Odds (daily)', ylab = 'Sample Size')
+
+funnel(b.all.daily, yaxis='se', 
+       xlab = 'Log Odds (daily)', ylab = 'Standard Error')
+
+metabias(b.all.daily, method.bias = 'Egger')
+```
+
